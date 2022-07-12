@@ -22,8 +22,8 @@ def train(model, criterion, optimizer, train_loader):
     losses = []
     for batch in tqdm(train_loader):
         texts, labels = batch
-        texts.to(device)
-        labels.to(device)
+        texts = texts.to(device)
+        labels = labels.to(device)
 
         predictions = model(texts)
 
@@ -47,8 +47,8 @@ def valid(model, criterion, dev_loader):
     with torch.no_grad():
         for batch in dev_loader:
             texts, labels = batch
-            texts.to(device)
-            labels.to(device)
+            texts = texts.to(device)
+            labels = labels.to(device)
 
             predictions = model(texts)
 
@@ -63,8 +63,8 @@ def valid(model, criterion, dev_loader):
 
     valid_loss = torch.tensor(losses).mean()
     valid_acc = accuracy_score(
-        y_true=all_labels.detach().numpy(),
-        y_pred=all_predictions.detach().numpy()
+        y_true=all_labels.detach().cpu().numpy(),
+        y_pred=all_predictions.detach().cpu().numpy()
     )
     print(f"Valid Loss : {valid_loss:.3f}")
     print(f"Valid Acc  : {valid_acc:.3f}")
@@ -78,8 +78,8 @@ def test(model, test_loader, class_index_mapping):
     with torch.no_grad():
         for batch in test_loader:
             texts, labels = batch
-            texts.to(device)
-            labels.to(device)
+            texts = texts.to(device)
+            labels = labels.to(device)
 
             predictions = model(texts)
 
@@ -89,8 +89,8 @@ def test(model, test_loader, class_index_mapping):
         all_predictions = torch.cat(all_predictions)
         all_labels = torch.cat(all_labels)
 
-    all_labels = all_labels.detach().numpy()
-    all_predictions = F.softmax(all_predictions, dim=-1).argmax(dim=-1).detach().numpy()
+    all_labels = all_labels.detach().cpu().numpy()
+    all_predictions = F.softmax(all_predictions, dim=-1).argmax(dim=-1).detach().cpu().numpy()
 
     test_acc = accuracy_score(
         y_true=all_labels,
