@@ -35,7 +35,7 @@ def make_vocab(
     :return: Constructed vocab.
     """
 
-    def make_token_count_mapping() -> OrderedDict:
+    def make_token_count_mapping() -> Dict[str, int]:
         """Make a mapping {token: count}"""
 
         all_tokens = [

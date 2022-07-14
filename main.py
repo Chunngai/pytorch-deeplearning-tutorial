@@ -1,6 +1,5 @@
 import argparse
 import copy
-
 import torch
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from torch import nn
@@ -17,13 +16,14 @@ from utils.training_utils import device
 
 
 def train(model, criterion, optimizer, train_loader):
+    """Train the model."""
+
     model.train()
 
     losses = []
     for batch in tqdm(train_loader):
-        texts, labels = batch
-        texts = texts.to(device)
-        labels = labels.to(device)
+        texts = batch["texts"].to(device)
+        labels = batch["labels"].to(device)
 
         predictions = model(texts)
 
@@ -39,6 +39,8 @@ def train(model, criterion, optimizer, train_loader):
 
 
 def valid(model, criterion, dev_loader):
+    """Validate the model performance."""
+
     model.eval()
 
     all_labels = []
@@ -46,9 +48,8 @@ def valid(model, criterion, dev_loader):
     losses = []
     with torch.no_grad():
         for batch in dev_loader:
-            texts, labels = batch
-            texts = texts.to(device)
-            labels = labels.to(device)
+            texts = batch["texts"].to(device)
+            labels = batch["labels"].to(device)
 
             predictions = model(texts)
 
@@ -69,17 +70,18 @@ def valid(model, criterion, dev_loader):
     print(f"Valid Loss : {valid_loss:.3f}")
     print(f"Valid Acc  : {valid_acc:.3f}")
 
-    return valid_loss
+    return valid_loss.item()
 
 
 def test(model, test_loader, class_index_mapping):
+    """Test the model"""
+
     all_labels = []
     all_predictions = []
     with torch.no_grad():
         for batch in test_loader:
-            texts, labels = batch
-            texts = texts.to(device)
-            labels = labels.to(device)
+            texts = batch["texts"].to(device)
+            labels = batch["labels"].to(device)
 
             predictions = model(texts)
 
@@ -103,6 +105,25 @@ def test(model, test_loader, class_index_mapping):
 
     print("\nConfusion Matrix : ")
     print(confusion_matrix(all_labels, all_predictions))
+
+
+def predict(model, text, tokenizer, vocab, class_index_mapping):
+    """Predict the label of the given text."""
+
+    tokens = tokenizer(text)
+    token_ids = vocab(tokens)
+    texts = torch.tensor([token_ids])
+    with torch.no_grad():
+        predictions = model(texts)
+
+    prediction_index = predictions[0].argmax(dim=0).item()
+    prediction_class = {
+        index: class_
+        for class_, index in class_index_mapping.items()
+    }[prediction_index]
+
+    print(f"text: {text}")
+    print(f"prediction: {prediction_class}")
 
 
 def main(args: argparse.Namespace):
@@ -182,6 +203,14 @@ def main(args: argparse.Namespace):
         model=best_model,
         test_loader=test_loader,
         class_index_mapping=class_index_mapping
+    )
+
+    predict(
+        model=best_model,
+        text="Apple Tops in Customer Satisfaction \"Dell comes in a close second, while Gateway shows improvement, study says.\"",
+        tokenizer=tokenizer,
+        vocab=vocab,
+        class_index_mapping=class_index_mapping,
     )
 
 

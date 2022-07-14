@@ -29,10 +29,12 @@ class RNNTextClassifier(nn.Module):
             out_features=class_num
         )
 
-    def forward(self, x: torch.tensor):
+    def forward(self, x: torch.tensor) -> torch.tensor:
         embeddings = self.embedding(x)
-        output, last_hidden = self.rnn(embeddings)
-        last_hidden = last_hidden.transpose(0, 1).squeeze()
+
+        _, last_hidden = self.rnn(embeddings)
+        last_hidden = last_hidden.squeeze(dim=0)
+
         y = self.linear(last_hidden)
 
         return y

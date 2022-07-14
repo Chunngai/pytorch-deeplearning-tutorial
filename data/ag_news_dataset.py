@@ -1,10 +1,8 @@
 import csv
-from typing import Dict, Callable
-from typing import Tuple, List
-
 import torch
 import torchtext.vocab
 from torch.utils.data import Dataset
+from typing import Dict, Callable, Tuple, List
 
 from utils.data_utils import pad
 
@@ -13,7 +11,7 @@ def collate_func(
         batch: Dict,
         vocab: torchtext.vocab.Vocab, tokenizer: Callable, max_len: int,
         class_index_mapping: Dict[str, int]
-):
+) -> Dict[str, torch.tensor]:
     """Collate function for training / validation / testing.
 
     :param batch: A list of {"text": text, "label": label}.
@@ -39,7 +37,10 @@ def collate_func(
         labels
     )))
 
-    return texts, labels
+    return {
+        "texts": texts,
+        "labels": labels,
+    }
 
 
 class AGNewsDataset(Dataset):
@@ -51,10 +52,10 @@ class AGNewsDataset(Dataset):
     def __init__(self, fp: str):
         self.texts, self.labels = self.read(fp)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.labels)
 
-    def __getitem__(self, idx: int):
+    def __getitem__(self, idx: int) -> Tuple[str, str]:
         text = self.texts[idx]
         label = self.labels[idx]
 
