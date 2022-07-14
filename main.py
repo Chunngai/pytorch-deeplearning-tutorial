@@ -122,7 +122,7 @@ def predict(model, text, tokenizer, vocab, class_index_mapping):
         for class_, index in class_index_mapping.items()
     }[prediction_index]
 
-    print(f"text: {text}")
+    print(f"\ntext: {text}")
     print(f"prediction: {prediction_class}")
 
 
@@ -154,8 +154,8 @@ def main(args: argparse.Namespace):
         lr=args.lr,
     )
 
-    collate_fn = lambda batch: collate_func(
-        batch=batch,
+    collate_fn = lambda samples: collate_func(
+        samples=samples,
         tokenizer=tokenizer,
         vocab=vocab,
         max_len=args.max_len,
@@ -195,6 +195,7 @@ def main(args: argparse.Namespace):
             criterion=criterion,
             dev_loader=dev_loader
         )
+        # Update the best model.
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
             best_model = copy.deepcopy(model)

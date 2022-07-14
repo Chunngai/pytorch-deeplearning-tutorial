@@ -8,13 +8,13 @@ from utils.data_utils import pad
 
 
 def collate_func(
-        batch: Dict,
+        samples: List[Tuple[str, str]],
         vocab: torchtext.vocab.Vocab, tokenizer: Callable, max_len: int,
         class_index_mapping: Dict[str, int]
 ) -> Dict[str, torch.tensor]:
     """Collate function for training / validation / testing.
 
-    :param batch: A list of {"text": text, "label": label}.
+    :param samples: A list of (text, label).
     :param vocab: Vocabulary.
     :param tokenizer: Tokenizer.
     :param max_len: Max len of the sentences.
@@ -22,7 +22,7 @@ def collate_func(
     :return: Collated batch.
     """
 
-    texts, labels = list(zip(*batch))
+    texts, labels = list(zip(*samples))
 
     texts = torch.tensor(list(map(
         lambda text: pad(
@@ -30,7 +30,7 @@ def collate_func(
             max_len=max_len
         ),
         texts
-    )), dtype=torch.int32)
+    )))
 
     labels = torch.tensor(list(map(
         lambda label: class_index_mapping[label],
