@@ -1,1 +1,1 @@
-# pytorch-deeplearning-demo
+# pytorch-deeplearning-tutorial
