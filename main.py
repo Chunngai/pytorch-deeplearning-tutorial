@@ -43,15 +43,15 @@ def valid(model, criterion, dev_loader):
 
     model.eval()
 
-    all_labels = []
-    all_predictions = []
+    all_labels = []  # Store all labels in the dev data.
+    all_predictions = []  # Store all predictions.
     losses = []
     with torch.no_grad():
         for batch in dev_loader:
             texts = batch["texts"].to(device)
-            labels = batch["labels"].to(device)
+            labels = batch["labels"].to(device)  # labels here: labels in a batch.
 
-            predictions = model(texts)
+            predictions = model(texts)  # predictions here: predictions in a batch.
 
             loss = criterion(predictions, labels)
             losses.append(loss.item())
