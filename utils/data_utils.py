@@ -6,7 +6,7 @@ from torchtext.vocab import vocab as vc
 
 
 def make_class_index_mapping(labels: List[str]) -> Dict[str, int]:
-    """Make a mapping that maps the classes to integral indices.
+    """Make a mapping that maps the classes to integer indices.
 
     :param labels: Label strings.
     :return: Label indices.

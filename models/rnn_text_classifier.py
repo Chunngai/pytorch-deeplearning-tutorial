@@ -5,6 +5,8 @@ from torch import nn
 class RNNTextClassifier(nn.Module):
     """A text classifier based on RNN.
 
+    :param vocab_len: Length of the vocab.
+    :param class_num: Number of labels.
     :param emb_len: Embedding dimension.
     :param hid_dim: Dimension of the RNN hidden layers.
     """
