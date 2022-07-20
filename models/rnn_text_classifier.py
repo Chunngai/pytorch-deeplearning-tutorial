@@ -7,8 +7,8 @@ class RNNTextClassifier(nn.Module):
 
     :param vocab_len: Length of the vocab.
     :param class_num: Number of labels.
-    :param emb_len: Embedding dimension.
-    :param hid_dim: Dimension of the RNN hidden layers.
+    :param embed_dim: Embedding dimension.
+    :param hidden_dim: Dimension of the RNN hidden layers.
     """
 
     def __init__(self, vocab_len: int, class_num: int, embed_dim: int, hidden_dim: int):

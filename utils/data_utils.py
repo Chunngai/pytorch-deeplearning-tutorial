@@ -43,13 +43,8 @@ def make_vocab(
             for text in texts
             for token in tokenizer(text)
         ]
+
         counter = Counter(all_tokens)
-        counter = sorted(
-            counter.items(),
-            key=lambda x: x[1],
-            reverse=True
-        )
-        counter = OrderedDict(counter)  # Not necessary for python >= 3.6
 
         return counter
 
