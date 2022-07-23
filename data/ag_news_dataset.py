@@ -80,6 +80,4 @@ class AGNewsDataset(Dataset):
                 texts.append(f"{title} {body}")
                 labels.append(label)
 
-                # TODO: Some operations in collate_func can be placed here.
-
         return texts, labels

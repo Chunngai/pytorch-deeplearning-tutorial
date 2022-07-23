@@ -1,9 +1,9 @@
 import argparse
 import copy
+
 import torch
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from torch import nn
-from torch.nn import functional as F
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 from torchtext.data import get_tokenizer
@@ -59,15 +59,16 @@ def valid(model, criterion, dev_loader):
             all_labels.append(labels)
             all_predictions.append(predictions.argmax(dim=-1))
 
-    all_labels = torch.cat(all_labels)
-    all_predictions = torch.cat(all_predictions)
+    all_labels = torch.cat(all_labels).detach().cpu().numpy()
+    all_predictions = torch.cat(all_predictions).detach().cpu().numpy()
 
     valid_loss = torch.tensor(losses).mean()
-    valid_acc = accuracy_score(
-        y_true=all_labels.detach().cpu().numpy(),
-        y_pred=all_predictions.detach().cpu().numpy()
-    )
     print(f"Valid Loss : {valid_loss:.3f}")
+
+    valid_acc = accuracy_score(
+        y_true=all_labels,
+        y_pred=all_predictions
+    )
     print(f"Valid Acc  : {valid_acc:.3f}")
 
     return valid_loss.item()
@@ -86,13 +87,10 @@ def test(model, test_loader, class_index_mapping):
             predictions = model(texts)
 
             all_labels.append(labels)
-            all_predictions.append(predictions)
+            all_predictions.append(predictions.argmax(dim=-1))
 
-        all_predictions = torch.cat(all_predictions)
-        all_labels = torch.cat(all_labels)
-
-    all_labels = all_labels.detach().cpu().numpy()
-    all_predictions = F.softmax(all_predictions, dim=-1).argmax(dim=-1).detach().cpu().numpy()
+    all_labels = torch.cat(all_labels).detach().cpu().numpy()
+    all_predictions = torch.cat(all_predictions).detach().cpu().numpy()
 
     test_acc = accuracy_score(
         y_true=all_labels,

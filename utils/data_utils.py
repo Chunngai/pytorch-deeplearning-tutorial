@@ -1,4 +1,4 @@
-from collections import OrderedDict, Counter
+from collections import Counter
 from typing import List, Dict, Callable
 
 import torchtext.vocab
